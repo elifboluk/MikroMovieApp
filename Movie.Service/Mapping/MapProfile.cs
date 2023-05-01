@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Movie.Service.Mapping
 {// DTOMapper
-    class MapProfile : Profile
+    public class MapProfile : Profile
     {
         public MapProfile()
         {
