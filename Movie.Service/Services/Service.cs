@@ -43,7 +43,12 @@ namespace Movie.Service.Services
 
         public async Task<Response<TDto>> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var movie = await _genericRepository.GetByIdAsync(id); // entity
+            if (movie == null) // null ise;
+            {
+                return Response<TDto>.Fail($"{typeof(T).Name}({id}) not found.",404,true); // 404 not found.
+            }
+            return Response<TDto>.Success(ObjectMapper.Mapper.Map<TDto>(movie), 200); // Dto'ya dönüştürüldü, status code ile datayı döndüm.
         }
 
         public Task<Response<NoDataDto>> Remove(TDto entity)
