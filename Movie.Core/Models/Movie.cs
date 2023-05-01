@@ -9,11 +9,13 @@ namespace Movie.Core.Models
     public class Movie
     {
         public int Id { get; set; }
+        public string Original_Language { get; set; }
+        public string Original_Title { get; set; }
         public string Title { get; set; }
-        public string Overview { get; set; }
-        public string PosterPath { get; set; }
-        public double VoteAverage { get; set; }
-        public DateTime ReleaseDate { get; set; }
+        public string Overview { get; set; }        
+        public double Vote_Average { get; set; }
+        public int Vote_Count { get; set; }
+        public DateTime Release_Date { get; set; }
         public ICollection<MovieRating> Ratings { get; set; }
     }
 }
