@@ -14,7 +14,7 @@ namespace Movie.Core.Services
         Task<Response<IEnumerable<TDto>>> GetAllAsync();
         Task<Response<IEnumerable<TDto>>> Where(Expression<Func<T, bool>> expression);
         Task<Response<TDto>> AddAsync(TDto entity);
-        Task<Response<NoDataDto>> Remove(TDto entity); // Başarılı işlem fakat client'a geriye data dönmüyorum. 
-        Task<Response<NoDataDto>> Update(TDto entity);
+        Task<Response<NoDataDto>> Remove(int id); // Başarılı işlem fakat client'a geriye data dönmüyorum. 
+        Task<Response<NoDataDto>> Update(TDto entity, int id);
     }
 }

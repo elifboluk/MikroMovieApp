@@ -1,4 +1,5 @@
-﻿using Movie.Core.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using Movie.Core.Repositories;
 using Movie.Core.Services;
 using Movie.Core.UnifOfWorks;
 using Movie.Service.Mapping;
@@ -51,19 +52,42 @@ namespace Movie.Service.Services
             return Response<TDto>.Success(ObjectMapper.Mapper.Map<TDto>(movie), 200); // Dto'ya dönüştürüldü, status code ile datayı döndüm.
         }
 
-        public Task<Response<NoDataDto>> Remove(TDto entity)
+        public async Task<Response<NoDataDto>> Remove(int id)
         {
-            throw new NotImplementedException();
+            // Bu id'ye sahip data var mı?
+            var isExistEntity = await _genericRepository.GetByIdAsync(id); 
+            if (isExistEntity ==null) // null ise;
+            {
+                return Response<NoDataDto>.Fail($"{typeof(T).Name}({id}) not found.",404,true);
+            }
+            _genericRepository.Remove(isExistEntity); // Eğer data varsa sil. (Memory'deki state = deleted olarak işaretlendi.)
+            await _unitOfWork.CommitAsync(); // Değişiklik database'e yansıtıldı.
+            return Response<NoDataDto>.Success(204); // Başarılı, geriye data dönmüyorum. NoContent → Response body'sinde hiçbir data olmayacak.
+
+            // Remove (TDto entity) olsaydı;
+            // _genericRepository.Remove(entity);
+            // await _unitOfWork.CommitAsync();
         }
 
-        public Task<Response<NoDataDto>> Update(TDto entity)
+        public async Task<Response<NoDataDto>> Update(TDto entity, int id)
         {
-            throw new NotImplementedException();
+            // Bu id'ye sahip data var mı?
+            var isExistEntity = await _genericRepository.GetByIdAsync(id); // Entity.Detached olarak işaretli. Memory'de takip edilmesin, çünkü Update metodu ile zaten memory'e takip edileceğini bildiriyorum.
+            if (isExistEntity == null) // null ise;
+            {
+                return Response<NoDataDto>.Fail($"{typeof(T).Name}({id}) not found.", 404, true);
+            }
+            var updateEntity = ObjectMapper.Mapper.Map<T>(entity); // Dto → entity.
+            _genericRepository.Update(updateEntity);
+            await _unitOfWork.CommitAsync();
+            return Response<NoDataDto>.Success(204); // NoContent → Response body'sinde hiçbir data olmayacak.
         }
 
-        public Task<Response<IEnumerable<TDto>>> Where(Expression<Func<T, bool>> expression)
+        public async Task<Response<IEnumerable<TDto>>> Where(Expression<Func<T, bool>> expression) // page, pagesize
         {
-            throw new NotImplementedException();
+            var list = _genericRepository.Where(expression);
+            // list.Skip(5).Take(10);
+            return Response<IEnumerable<TDto>>.Success(ObjectMapper.Mapper.Map<IEnumerable<TDto>>(await list.ToListAsync()),200);
         }
     }
 }

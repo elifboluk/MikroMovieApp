@@ -37,7 +37,7 @@ namespace Movie.Repository.Repositories
             var entity = await _dbSet.FindAsync(id);
             if (entity!=null) // id'ye sahip data var ise;
             {
-                _context.Entry(entity).State = EntityState.Detached; // Entity memory'de takip edilmesin.
+                _context.Entry(entity).State = EntityState.Detached; // Entity memory'de takip edilmesin. Memory'de takip edilmesin, çünkü Update metodu ile zaten memory'e takip edileceğini bildiriyorum.
             }
             return entity;
         }
@@ -49,8 +49,9 @@ namespace Movie.Repository.Repositories
 
         public T Update(T entity)
         {
-            _context.Update(entity); // _context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(entity).State = EntityState.Modified; // _context.Update(entity);
             return entity;
+            // Update metodu ile memory'e takip edileceğini bildiriyorum.
         }
 
         public IQueryable<T> Where(Expression<Func<T, bool>> expression)
