@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace Movie.Service.Services
 {
-    internal class TokenService : ITokenService // Core katmanında
+    public class TokenService : ITokenService // Core katmanında
     {
         private readonly UserManager<UserApp> _userManager; // Kullanıcı ile ilgili işlem yapacağım için UserManager geçiyorum.
         private readonly CustomTokenOption _customTokenOption; // Options'lara göre token oluşacağı için CustomTokenOption geçiyorum.

@@ -1,10 +1,72 @@
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Movie.Core.Models;
+using Movie.Core.Repositories;
+using Movie.Core.Services;
+using Movie.Core.UnifOfWorks;
+using Movie.Repository.EntityFramework;
+using Movie.Repository.Repositories;
+using Movie.Repository.UnitOfWorks;
+using Movie.Service.Services;
 using SharedLibrary.Configurations;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption")); // appsettings.json i�erisindeki (Configuration ile appsettings'e eri�iyorum) TokenOption section'�n� al. CustomTokenOption s�n�f�, appsettings.json'daki TokenOption i�erisindeki parametreleri doldurup bir nesne �rne�i verecek. // Options Pattern
 
+// DI Register
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>(); // Herhangi bir constructor'da IAuthenticationService interface'i ile karşılaştığında AuthenticationService'ten bir nesne örneği al.
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IService<,>), typeof(Service<,>));
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddDbContext<AppDbContext>(x =>
+{
+    x.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), option =>
+    {
+        // option.MigrationsAssembly(Assembly.GetAssembly(typeof(AppDbContext)).GetName().Name);
+        option.MigrationsAssembly("Movie.Repository");
+    });
+});
+
+builder.Services.AddIdentity<UserApp, IdentityRole>(option => {
+    option.User.RequireUniqueEmail = true;
+    option.Password.RequireNonAlphanumeric = false;
+}).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders(); // Şifre sıfırlama işleminde token üretebilmek için AddDefaultTokenProviders ile default bir token sağlıyorum.
+
+builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption")); // appsettings.json içerisindeki (Configuration ile appsettings'e erişiyorum) TokenOption section'ını al. CustomTokenOption sınıfı, appsettings.json'daki TokenOption içerisindeki parametreleri doldurup bir nesne örneği verecek. // Options Pattern
+
+
+
+builder.Services.AddAuthentication(x =>
+{// Farklı üyelik sistemleri de(kurumsal, bireysel, öğrenci vs. olsaydı) AuthenticationScheme ile eklenebilir. ↓
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, y =>
+{
+    var tokenOptions = builder.Configuration.GetSection("TokenOption").Get<CustomTokenOption>();
+    y.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidIssuer = tokenOptions.Issuer,
+        ValidAudience = tokenOptions.Audience[0],
+        IssuerSigningKey = SignService.GetSymmetricSecurityKey(tokenOptions.SecurityKey),
+
+        // Kontrol ↓
+        ValidateIssuerSigningKey = true,
+        ValidateAudience = true,
+        ValidateIssuer = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+
+}); // Authentication'daki sheme ile JwtBearer'dan gelen şemanın iletişime geçmesi için Authentication'ın JwtBearer'ı kullancağını belirtiyorum.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
