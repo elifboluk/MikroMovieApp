@@ -58,7 +58,7 @@ namespace Movie.Service.Services
             JwtSecurityToken jwtSecurityToken = new JwtSecurityToken(
                 issuer: _customTokenOption.Issuer, // Token'ı yayınlayan bilgisi Auth server
                 expires: accessTokenExpiration, 
-                notBefore: DateTime.Now, // Token Şimdi ile verilen dakika arasında geçerli.
+                // notBefore: DateTime.Now, // Token Şimdi ile verilen dakika arasında geçerli.
                 claims: GetClaims(userApp, _customTokenOption.Audience), // Token'ının hangi api'lere ulaşabileceğinin bilgisi
                 signingCredentials: signingCredentials); // imza
 

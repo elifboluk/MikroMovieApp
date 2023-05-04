@@ -31,8 +31,8 @@ builder.Services.AddDbContext<AppDbContext>(x =>
 {
     x.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), option =>
     {
-        // option.MigrationsAssembly(Assembly.GetAssembly(typeof(AppDbContext)).GetName().Name);
-        option.MigrationsAssembly("Movie.Repository");
+        option.MigrationsAssembly(Assembly.GetAssembly(typeof(AppDbContext)).GetName().Name);
+        // option.MigrationsAssembly("Movie.Repository.EntityFramework");
     });
 });
 
@@ -44,7 +44,7 @@ builder.Services.AddIdentity<UserApp, IdentityRole>(option => {
 builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption")); // appsettings.json içerisindeki (Configuration ile appsettings'e erişiyorum) TokenOption section'ını al. CustomTokenOption sınıfı, appsettings.json'daki TokenOption içerisindeki parametreleri doldurup bir nesne örneği verecek. // Options Pattern
 
 
-builder.Services.AddAuthentication(x =>
+/* builder.Services.AddAuthentication(x =>
 {// Farklı üyelik sistemleri de (kurumsal, bireysel, öğrenci vs. olsaydı) AuthenticationScheme ile eklenebilir. ↓
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,7 +64,27 @@ builder.Services.AddAuthentication(x =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-}); // Authentication'daki sheme ile JwtBearer'dan gelen şemanın iletişime geçmesi için Authentication'ın JwtBearer'ı kullanacağını belirtiyorum.
+}); // Authentication'daki sheme ile JwtBearer'dan gelen şemanın iletişime geçmesi için Authentication'ın JwtBearer'ı kullanacağını belirtiyorum.*/
+builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption"));
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, opts =>
+{
+    var tokenOptions = builder.Configuration.GetSection("TokenOption").Get<CustomTokenOption>();
+    opts.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidIssuer = tokenOptions.Issuer,
+        ValidAudience = tokenOptions.Audience[0],
+        IssuerSigningKey = SignService.GetSymmetricSecurityKey(tokenOptions.SecurityKey),
+
+        ValidateIssuerSigningKey = true,
+        ValidateAudience = true,
+        ValidateIssuer = true,
+        ValidateLifetime = true
+    };
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -81,7 +101,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
+// app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 

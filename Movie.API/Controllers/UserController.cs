@@ -25,6 +25,7 @@ namespace Movie.API.Controllers
 
         [Authorize] // Bu end point mutlaka bir token istiyor.
         [HttpGet]
+        [Route("getuser")]
         public async Task<IActionResult> GetUser()
         {
             // HttpContext.User.Claims.Where(x=x.Type == "username");
