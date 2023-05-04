@@ -44,9 +44,8 @@ builder.Services.AddIdentity<UserApp, IdentityRole>(option => {
 builder.Services.Configure<CustomTokenOption>(builder.Configuration.GetSection("TokenOption")); // appsettings.json içerisindeki (Configuration ile appsettings'e erişiyorum) TokenOption section'ını al. CustomTokenOption sınıfı, appsettings.json'daki TokenOption içerisindeki parametreleri doldurup bir nesne örneği verecek. // Options Pattern
 
 
-
 builder.Services.AddAuthentication(x =>
-{// Farklı üyelik sistemleri de(kurumsal, bireysel, öğrenci vs. olsaydı) AuthenticationScheme ile eklenebilir. ↓
+{// Farklı üyelik sistemleri de (kurumsal, bireysel, öğrenci vs. olsaydı) AuthenticationScheme ile eklenebilir. ↓
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, y =>
@@ -65,8 +64,7 @@ builder.Services.AddAuthentication(x =>
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-
-}); // Authentication'daki sheme ile JwtBearer'dan gelen şemanın iletişime geçmesi için Authentication'ın JwtBearer'ı kullancağını belirtiyorum.
+}); // Authentication'daki sheme ile JwtBearer'dan gelen şemanın iletişime geçmesi için Authentication'ın JwtBearer'ı kullanacağını belirtiyorum.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
