@@ -12,46 +12,53 @@ namespace Movie.Repository.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly DbContext _context; // Veritabanı ile işlemler yapacağımız için _context
-        private readonly DbSet<T> _dbSet; // Tablolarla işlem yapacağımız için _dbSet
+        protected readonly AppDbContext _context;
+        private readonly DbSet<T> _dbSet;
 
         public GenericRepository(AppDbContext context)
         {
             _context = context;
-            _dbSet = context.Set<T>();
+            _dbSet = _context.Set<T>();
         }
 
         public async Task AddAsync(T entity)
         {
-            await _dbSet.AddAsync(entity); // Memory'e entity eklendi.
+            await _dbSet.AddAsync(entity);
         }
 
-
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task AddRangeAsync(IEnumerable<T> entities)
         {
-            return await _dbSet.ToListAsync();
+            await _dbSet.AddRangeAsync(entities);
+        }
+
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> expression)
+        {
+            return await _dbSet.AnyAsync(expression);
+        }
+
+        public IQueryable<T> GetAll()
+        {
+            return _dbSet.AsNoTracking().AsQueryable(); // datayı memory'e alma ve anlık olarak izleme
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity!=null) // id'ye sahip data var ise;
-            {
-                _context.Entry(entity).State = EntityState.Detached; // Entity memory'de takip edilmesin. Memory'de takip edilmesin, çünkü Update metodu ile zaten memory'e takip edileceğini bildiriyorum.
-            }
-            return entity;
+            return await _dbSet.FindAsync(id);
         }
 
         public void Remove(T entity)
         {
-            _dbSet.Remove(entity); // _context.Entry(entity).State = EntityState.Deleted;
+            _dbSet.Remove(entity);
         }
 
-        public T Update(T entity)
+        public void RemoveRange(IEnumerable<T> entities)
         {
-            _context.Entry(entity).State = EntityState.Modified; // _context.Update(entity);
-            return entity;
-            // Update metodu ile memory'e takip edileceğini bildiriyorum.
+            _dbSet.RemoveRange(entities);
+        }
+
+        public void Update(T entity)
+        {
+            _dbSet.Update(entity);
         }
 
         public IQueryable<T> Where(Expression<Func<T, bool>> expression)

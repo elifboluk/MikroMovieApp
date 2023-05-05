@@ -14,7 +14,8 @@ namespace Movie.Core.DTOs
         public string Comment { get; set; }
         [Range(1,10)]
         public int Rating { get; set; }
-        public int MovieId { get; set; }        
+        public string MovieName { get; set; }
+        public int MovieId { get; set; }
         public string UserId { get; set; }
     }
 }

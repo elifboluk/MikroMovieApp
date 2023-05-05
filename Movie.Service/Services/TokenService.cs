@@ -47,7 +47,7 @@ namespace Movie.Service.Services
         }
         public TokenDto CreateToken(UserApp userApp)
         {
-            var accessTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.AccessTokenExpiration); // Süre
+            var accessTokenExpiration = DateTime.Now.AddDays(5); // Süre
             var refreshTokenExpiration = DateTime.Now.AddMinutes(_customTokenOption.RefreshTokenExpiration); // Süre
             var securityKey = SignService.GetSymmetricSecurityKey(_customTokenOption.SecurityKey); // İmzalayacak key
 

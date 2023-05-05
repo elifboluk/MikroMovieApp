@@ -59,7 +59,7 @@ namespace Movie.Service.Services
             // Ama önce UserId'ye göre refresh token veritabanında var mı, kontrol et. Varsa getir, yoksa null dön.
             if (userRefreshToken==null) // Refresh token veritabanında yoksa oluştur.
             {
-                await _userRefreshTokenService.AddAsync(new UserRefreshToken { UserId = user.Id, RefreshTokenCode = token.RefreshToken, Expiration = token.RefreshTokenExpiration });
+                await _userRefreshTokenService.AddAsync(new UserRefreshToken { UserId = user.Id, RefreshTokenCode = token.RefreshToken, Expiration = DateTime.Now.AddDays(5)});
             }
             else // Refresh token veritabanında varsa güncelle.
             {

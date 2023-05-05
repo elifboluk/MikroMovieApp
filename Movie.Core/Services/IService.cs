@@ -8,13 +8,17 @@ using System.Threading.Tasks;
 
 namespace Movie.Core.Services
 {
-    public interface IService<T, TDto> where T : class where TDto : class // Gelen entity'i hangi dto'ya dönüştüreceğimi belirliyorum.
+    public interface IService<T> where T : class // Gelen entity'i hangi dto'ya dönüştüreceğimi belirliyorum.
     {
-        Task<Response<TDto>> GetByIdAsync(int id); // Geriye direkt olarak Dto dönüyorum.
-        Task<Response<IEnumerable<TDto>>> GetAllAsync();
-        Task<Response<IEnumerable<TDto>>> Where(Expression<Func<T, bool>> expression);
-        Task<Response<TDto>> AddAsync(TDto entity);
-        Task<Response<NoDataDto>> Remove(int id); // Başarılı işlem fakat client'a geriye data dönmüyorum. 
-        Task<Response<NoDataDto>> Update(TDto entity, int id);
+        Task<T> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        IQueryable<T> Where(Expression<Func<T, bool>> expression);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> expression);
+        Task<T> AddAsync(T entity);
+        Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entities);
+        Task UpdateAsync(T entity);
+        Task RemoveAsync(T entity);
+        Task RemoveRangeAsync(IEnumerable<T> entities);
+
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Movie.API.Mapping;
 using Movie.Core.Models;
 using Movie.Core.Repositories;
 using Movie.Core.Services;
@@ -16,14 +17,22 @@ using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddAutoMapper(typeof(MapProfile));
 // DI Register
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>(); // Herhangi bir constructor'da IAuthenticationService interface'i ile karşılaştığında AuthenticationService'ten bir nesne örneği al.
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
-builder.Services.AddScoped(typeof(IService<,>), typeof(Service<,>));
+builder.Services.AddScoped(typeof(IService<>), typeof(Service<>));
+builder.Services.AddScoped<IMovieRatingService, MovieRatingService>();
+
+
+builder.Services.AddControllersWithViews() 
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
+
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
