@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Movie.Core.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace Mini.API.Controllers
+namespace Movie.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MoviesController : ControllerBase
+    public class MovieDbController : ControllerBase
     {
         // GET: api/<TestController>
         [HttpGet]
@@ -52,3 +52,4 @@ namespace Mini.API.Controllers
 
 // Gelen datalar json olarak geldiği için class objesine çevirilecek.
 // Gelen class add işlemiyle database'e kaydet.
+
