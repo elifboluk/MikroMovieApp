@@ -1,9 +1,9 @@
 # MikroMovieApp
 
-The Movie Database (themoviedb.org) API'si ile filmlerin verileri çekilerek bu veriler veritabanına kaydedilmektedir. Veritabanı yönetim sistemi olarak Microsoft SQL Server kullanılmıştır.
-Kimlik doğrulama işlemi için Auth2.0 servisi kullanılarak bir JWT oluşturma sistemi geliştirilmiştir.
-Belirtilecek adetteki filmler, bir endpoint aracılığıyla veritabanına aktarılmıştır. Sayfa büyüklüğü, parametre olarak alınmaktadır.
-Seçilen bir filme not ve puan ekleme işlemi, bir endpoint aracılığıyla gerçekleştirilebilir. Bu endpoint'te, not text alanı ve puan 1-10 arasında bir tam sayı olmak zorundadır.
+→ The Movie Database (themoviedb.org) API'si ile filmlerin verileri çekilerek bu veriler veritabanına kaydedilmektedir. Veritabanı yönetim sistemi olarak Microsoft SQL Server kullanılmıştır.  
+→ Kimlik doğrulama işlemi için Auth2.0 servisi kullanılarak bir JWT oluşturma sistemi geliştirilmiştir.  
+→ Belirtilecek adetteki filmler, bir endpoint aracılığıyla veritabanına aktarılmıştır. Sayfa büyüklüğü, parametre olarak alınmaktadır.  
+→ Seçilen bir filme not ve puan ekleme işlemi, bir endpoint aracılığıyla gerçekleştirilebilir. Bu endpoint'te, not text alanı ve puan 1-10 arasında bir tam sayı olmak zorundadır.  
 
 
 ![api](https://user-images.githubusercontent.com/101395811/236648781-ca970b33-4f5b-41b2-888a-673b33b2588e.JPG)
